@@ -71,6 +71,7 @@ export default function Page() {
   const [customRule, setCustomRule] = useState("");
   const [state, setState] = useState("");
   const [result, setResult] = useState<{
+    error?: string;
     dataPagamento?: string;
     feriadosConsiderados?: string[];
     explicacao?: string[];
@@ -167,7 +168,7 @@ export default function Page() {
       }
 
       setAnimationKey((prev) => prev + 1);
-    } catch (error) {
+    } catch {
       setResult({ error: "Erro ao conectar com o servidor" });
     } finally {
       setLoading(false);

@@ -136,7 +136,7 @@ export async function GET(req: Request) {
   return NextResponse.json({
     dataPagamento: format(currentDate, "dd/MM/yyyy"),
     feriadosConsiderados: Array.from(analyzedHolidays.entries()).map(
-      ([date, name]) => `${name} (${format(date, "dd/MM/yyyy")})`
+      ([date, name]) => `${name} (${date})`
     ),
     explicacao: explanation,
     totalDaysSkipped,

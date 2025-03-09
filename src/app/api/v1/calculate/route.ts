@@ -62,11 +62,9 @@ export async function GET(req: Request) {
   const analyzedHolidays = new Map<string, string>();
   let totalDaysSkipped = 0;
 
-  // const hd = state ? new Holidays(`BR-${state}`) : new Holidays("BR");
-
   const hd = new Holidays("BR");
   if (state) {
-    hd.init("BR", state); // Configuração correta para estados
+    hd.init("BR", state); // Configuração para feriados estaduais
   }
   let countedDays = 0;
 
@@ -78,26 +76,21 @@ export async function GET(req: Request) {
 
     let holidayName = "";
     let isHoliday = false;
-    let holidayDate = "";
     const holidayInfo = hd.isHoliday(currentDate);
-    console.log(holidayInfo);
 
     if (holidayInfo) {
-      let validHoliday;
-
-      if (Array.isArray(holidayInfo)) {
-        validHoliday = holidayInfo.find(
-          (h) =>
-            h.type &&
-            !h.type.includes("optional") &&
-            !h.type.includes("observance")
-        );
-      }
+      const validHoliday = Array.isArray(holidayInfo)
+        ? holidayInfo.find(
+            (h) =>
+              h.type &&
+              !h.type.includes("optional") &&
+              !h.type.includes("observance")
+          )
+        : holidayInfo;
 
       if (validHoliday) {
         isHoliday = true;
         holidayName = validHoliday.name;
-        holidayDate = validHoliday.date;
       }
     }
 
@@ -110,17 +103,19 @@ export async function GET(req: Request) {
     if (!isWeekend && !isHoliday) {
       countedDays++;
     } else {
+      const formattedDate = format(currentDate, "dd/MM/yyyy");
       let motivo = "";
-      if (isWeekend) {
-        motivo = dayOfWeek === 0 ? "Domingo" : "Sábado";
-      }
+
       if (isHoliday) {
         motivo = holidayName || "Feriado";
         if (!analyzedHolidays.has(currentDateStr)) {
-          analyzedHolidays.set(format(holidayDate, "dd/MM/yyyy"), holidayName);
+          analyzedHolidays.set(formattedDate, holidayName);
         }
+      } else if (isWeekend) {
+        motivo = dayOfWeek === 0 ? "Domingo" : "Sábado";
       }
-      explanation.push(` ${format(currentDate, "dd/MM/yyyy")}: ${motivo}`);
+
+      explanation.push(`${formattedDate}: ${motivo}`);
       totalDaysSkipped++;
     }
 
@@ -129,14 +124,13 @@ export async function GET(req: Request) {
   }
 
   if (currentDate.getDay() === 6) {
+    const formattedSaturday = format(currentDate, "dd/MM/yyyy");
     explanation.push(
-      ` ${format(
-        currentDate,
-        "dd/MM/yyyy"
-      )}: Sábado. O pagamento é previsto para ser adiantado para sexta-feira.`
+      `${formattedSaturday}: Sábado. O pagamento é previsto para ser adiantado para sexta-feira.`
     );
     currentDate = addDays(currentDate, -1);
   }
+
   return NextResponse.json({
     dataPagamento: format(currentDate, "dd/MM/yyyy"),
     feriadosConsiderados: Array.from(analyzedHolidays.entries()).map(

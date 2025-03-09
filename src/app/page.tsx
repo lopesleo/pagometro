@@ -71,7 +71,6 @@ export default function Page() {
   const [customRule, setCustomRule] = useState("");
   const [state, setState] = useState("");
   const [result, setResult] = useState<{
-    error?: string;
     dataPagamento?: string;
     feriadosConsiderados?: string[];
     explicacao?: string[];

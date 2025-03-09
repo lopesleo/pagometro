@@ -2,9 +2,6 @@ import { NextResponse } from "next/server";
 import { addDays, format, parseISO, isValid } from "date-fns";
 import Holidays from "date-holidays";
 
-// Cache para dados de feriados
-const holidayCache = new Map<string, string>();
-
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const baseDate = searchParams.get("baseDate");

@@ -80,6 +80,8 @@ export async function GET(req: Request) {
     let isHoliday = false;
 
     const holidayInfo = hd.isHoliday(currentDate);
+    console.log(holidayInfo);
+
     if (holidayInfo) {
       let validHoliday;
       if (Array.isArray(holidayInfo)) {

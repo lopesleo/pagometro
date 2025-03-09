@@ -64,9 +64,12 @@ const AnimatedNumber = ({ value }: { value: number }) => {
 export default function Page() {
   const [baseDate, setBaseDate] = useState(() => {
     const today = new Date();
-    today.setDate(0);
+    // Para obter sempre o 1º dia do mês atual, defina o dia como 1
+    today.setDate(1);
+
     return today.toISOString().split("T")[0];
   });
+
   const [rulePreset, setRulePreset] = useState("5");
   const [customRule, setCustomRule] = useState("");
   const [state, setState] = useState("");

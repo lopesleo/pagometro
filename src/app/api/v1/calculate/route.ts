@@ -78,12 +78,13 @@ export async function GET(req: Request) {
 
     let holidayName = "";
     let isHoliday = false;
-
+    let holidayDate = "";
     const holidayInfo = hd.isHoliday(currentDate);
     console.log(holidayInfo);
 
     if (holidayInfo) {
       let validHoliday;
+
       if (Array.isArray(holidayInfo)) {
         validHoliday = holidayInfo.find(
           (h) =>
@@ -96,6 +97,7 @@ export async function GET(req: Request) {
       if (validHoliday) {
         isHoliday = true;
         holidayName = validHoliday.name;
+        holidayDate = validHoliday.date;
       }
     }
 
@@ -115,7 +117,7 @@ export async function GET(req: Request) {
       if (isHoliday) {
         motivo = holidayName || "Feriado";
         if (!analyzedHolidays.has(currentDateStr)) {
-          analyzedHolidays.set(format(currentDate, "dd/MM/yyyy"), holidayName);
+          analyzedHolidays.set(format(holidayDate, "dd/MM/yyyy"), holidayName);
         }
       }
       explanation.push(` ${format(currentDate, "dd/MM/yyyy")}: ${motivo}`);

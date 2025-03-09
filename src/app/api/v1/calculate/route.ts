@@ -62,8 +62,12 @@ export async function GET(req: Request) {
   const analyzedHolidays = new Map<string, string>();
   let totalDaysSkipped = 0;
 
-  const hd = state ? new Holidays(`BR-${state}`) : new Holidays("BR");
+  // const hd = state ? new Holidays(`BR-${state}`) : new Holidays("BR");
 
+  const hd = new Holidays("BR");
+  if (state) {
+    hd.init("BR", state); // Configuração correta para estados
+  }
   let countedDays = 0;
 
   while (countedDays < rule) {
@@ -74,8 +78,6 @@ export async function GET(req: Request) {
 
     let holidayName = "";
     let isHoliday = false;
-
-    // Verifica no cache primeiro
 
     const holidayInfo = hd.isHoliday(currentDate);
     if (holidayInfo) {
@@ -111,7 +113,7 @@ export async function GET(req: Request) {
       if (isHoliday) {
         motivo = holidayName || "Feriado";
         if (!analyzedHolidays.has(currentDateStr)) {
-          analyzedHolidays.set(currentDateStr, holidayName);
+          analyzedHolidays.set(format(currentDate, "dd/MM/yyyy"), holidayName);
         }
       }
       explanation.push(` ${format(currentDate, "dd/MM/yyyy")}: ${motivo}`);

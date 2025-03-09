@@ -76,6 +76,7 @@ export async function GET(req: Request) {
 
     let holidayName = "";
     let isHoliday = false;
+    let holidayDate: Date | null = null; // Para armazenar a data oficial do feriado
     const holidayInfo = hd.isHoliday(currentDate);
 
     if (holidayInfo) {
@@ -91,6 +92,7 @@ export async function GET(req: Request) {
       if (validHoliday) {
         isHoliday = true;
         holidayName = validHoliday.name;
+        holidayDate = parseISO(validHoliday.date); // Converte a string ISO do feriado para Date
       }
     }
 
@@ -98,21 +100,28 @@ export async function GET(req: Request) {
     if (customHoliday && customHoliday === currentDateStr) {
       isHoliday = true;
       holidayName = "Feriado Personalizado";
+      holidayDate = currentDate; // Usa a currentDate para feriados personalizados
     }
 
     if (!isWeekend && !isHoliday) {
       countedDays++;
     } else {
-      const formattedDate = format(currentDate, "dd/MM/yyyy");
+      let formattedDate: string;
       let motivo = "";
 
-      if (isHoliday) {
+      if (isHoliday && holidayDate) {
+        formattedDate = format(holidayDate, "dd/MM/yyyy"); // Usa a data do feriado
         motivo = holidayName || "Feriado";
         if (!analyzedHolidays.has(currentDateStr)) {
           analyzedHolidays.set(formattedDate, holidayName);
         }
       } else if (isWeekend) {
+        formattedDate = format(currentDate, "dd/MM/yyyy"); // Usa a currentDate para fins de semana
         motivo = dayOfWeek === 0 ? "Domingo" : "Sábado";
+      } else {
+        // Caso de fallback (não deve ocorrer, mas adicionado por segurança)
+        formattedDate = format(currentDate, "dd/MM/yyyy");
+        motivo = "Desconhecido";
       }
 
       explanation.push(`${formattedDate}: ${motivo}`);

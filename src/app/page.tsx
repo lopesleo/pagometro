@@ -1,4 +1,5 @@
 "use client";
+import Footer from "@/components/footer";
 import { useState, useEffect } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 
@@ -383,6 +384,9 @@ export default function Page() {
           </div>
         )}
       </div>
+
+      {/* Componente Footer */}
+      <Footer />
     </main>
   );
 }
